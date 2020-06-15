@@ -12,15 +12,52 @@ const pencilSize = document.getElementById(UiSelectors.pencilSizeSelector);
 const clearBtn = document.querySelector(UiSelectors.clearBtnSelector);
 const saveBtn = document.querySelector(UiSelectors.saveBtnSelector);
 
+const paths = [];
+const currentPath = [];
+
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(windowWidth, windowHeight);
+  background(canvasColor.value);
 }
 
 function draw() {
   if (mouseIsPressed) {
-    fill(0);
-  } else {
-    fill(255);
+    const point = {
+      x: mouseX,
+      y: mouseY,
+      color: pencilColor.value,
+      size: pencilSize.value,
+    };
+    currentPath.push(point);
   }
-  ellipse(mouseX, mouseY, 80, 80);
+  paths.forEach((path) => {
+    beginShape();
+    path.forEach(({ x, y, color, size }) => {
+      vertex(x, y);
+      strokeWeight(size);
+      stroke(color);
+    });
+    endShape();
+  });
+
+  noFill();
 }
+
+function mousePressed() {
+  currentPath.length = 0;
+
+  paths.push(currentPath);
+}
+
+canvasColor.addEventListener("change", () => {
+  background(canvasColor.value);
+});
+
+clearBtn.addEventListener("click", () => {
+  clear();
+  background(canvasColor.value);
+});
+
+saveBtn.addEventListener("click", () => {
+  save("myCanvas.jpg");
+});
